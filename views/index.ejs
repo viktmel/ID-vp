@@ -9,15 +9,21 @@
 	<h1>Viktoria Melnik, veebiprogrammeerimine</h1>
 	<p>See leht on loodud veebiprogrammeerimise kursusel <a href="https://www.tlu.ee">Tallinna Ülikoolis</a> ning ei sisalda tõsiseltvõetavat sisu!</p>
 	<p>Esialgu tutvusime lihtsalt HTML keelega, peatselt programmeerime.</p>
+	<p>Täna on <%= dateNow %>. Kell on <%= timeNow%>. </p>
 	<!-- <hr><p><a href="http://greeny.cs.tlu.ee:5220/vanasona">Vanasõnad</a><p><a href="http://greeny.cs.tlu.ee:5220/tlu">Miks tulin Tallinna Ülikooli õppima</a> -->
 	<hr>
-	<p>Täna on <%= dateNow %>.<p><p>Veebileht oli avatud kell <%= timeNow %>.<p>
+	<img src="gallery/normal/<%= galleryImage %>" alt="">
+	<p><%= altImage %></p>
 	<ul>
+		<li><a href="/signup">Loo kasutajakonto</a></li>
+		<li><a href="/signin">Sisselogimine</a></li>
+		<br>
 		<li><a href="/tlu">Miks tulin Tallinna Ülikooli õppima</a></li>
 		<li><a href="/vanasona">Vanasõna</a></li>
 		<li><a href="/regvisit">Registreeri oma külastus</a></li>
-		<li><a href="/kulastus">Veebilehe viimane külastus</a></li>
 		<li><a href="/eestifilm">Eesti film</a></li>
+		<li><a href="/galleryPhotoUpload">Fotode üleslaadimine pildigaleriisse</a></li>
+		<li><a href="/galleryPhotoUpload/galleryPhotos">Pildigalerii</a></li>
 	</ul>
 
 </body>

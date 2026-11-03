@@ -1,10 +1,12 @@
 const express = require('express');
 const dateET = require('./src/dateTimeET');
 const fs = require('fs').promises;
+const mysql = require('mysql2/promise');
+const sharp = require('sharp');
 //moodul POST päringute lahtiharutamiseks, parsimiseks
 const bodyparser = require('body-parser');
 //moodul andmebaasiga suhtlemiseks (koos async ehk ootamise osaga)
-const mysql = require('mysql2/promise');
+//const mysql = require('mysql2/promise');
 //moodul .env keskkonnamuutujute lugemiseks
 require('dotenv').config();
 
@@ -18,16 +20,46 @@ const app = express();
 app.set('view engine', 'ejs');
 //määrame avalikuna kasutatava kataloogi
 app.use(express.static('public'));
-//määrame vormide sisu parsimiseks
-app.use(bodyparser.urlencoded({extended: false}));
+//määrame vormide sisu parsimiseks, kui false siis ainult tekst
+app.use(bodyparser.urlencoded({extended: true}));
 
 //marsruudid
-app.get('/', (req, res)=>{
-	//const dayNow = dateET.day();
-	const dateNow = dateET.date(0);
-	const timeNow = dateET.time();
-	//res.send('Express.js veeb läkski tööle!');
-	res.render('index', {dateNow: dateNow, timeNow: timeNow});
+app.get('/', async (req, res)=>{
+	let conn; //connection
+	try {
+		const dateNow = dateET.date(0);
+		const timeNow = dateET.time();
+		//res.render('index', {dateNow: dateNow, timeNow: timeNow});
+		conn = await mysql.createConnection({
+			host: process.env.DB_HOST, 
+			user: process.env.DB_USER,
+			password: process.env.DB_PASS,
+			database: process.env.DB_NAME
+		});
+		let galleryImage = 'SELECT file_name, alt_text FROM gallery_photos WHERE id=(SELECT MAX(id) FROM gallery_photos WHERE privacy>=2 AND deleted IS NULL)';
+		const [galleryImages] = await conn.execute(galleryImage);
+		//console.log(sqlRes);
+		res.render('index', {galleryImage: galleryImages[0].file_name, dateNow: dateNow, timeNow: timeNow, altImage: galleryImages[0].alt_text}/*/, {dateNow: dateNow, timeNow: timeNow}/*/);
+	}
+	catch (err) {
+		console.log('Andmebaaside suhtlemise viga: ' + err);
+		res.render('index', {galleryImage: 'Andmebaas ei leidnud pilte'});
+	}
+	finally {
+		if(conn){
+			await conn.end();
+		}
+	}
+});
+
+//Sisseloginud kasutajate avaleht
+app.get('/home', (req, res) => {
+	res.render('home')
+});
+
+//Väljalogimine
+app.get('/logout', (req, res) => {
+	res.redirect('/');
 });
 
 app.get('/vanasona', async (req, res)=>{
@@ -46,6 +78,7 @@ app.get('/tlu', (req, res)=>{
 	res.render('tlu');
 });
 
+/*
 app.get('/regvisit', (req, res)=>{
 	const dateNow = dateET.date(0);
 	const timeNow = dateET.time();
@@ -77,83 +110,27 @@ app.get('/kulastus', async (req, res)=>{
 	}
 
 });
+*/
 
-app.get('/eestifilm', (req, res)=>{
-	res.render('eestifilm');
-});
+//Eesti filmi marsruudid
+const eestiFilmRouter = require('./routes/eestifilmRoutes');
+app.use('/eestifilm', eestiFilmRouter);
 
-app.get('/eestifilm/inimesed', async (req, res)=>{
-	let conn; //connection
-	try {
-		conn = await mysql.createConnection({
-			host: process.env.DB_HOST, 
-			user: process.env.DB_USER,
-			password: process.env.DB_PASS,
-			database: process.env.DB_NAME
-		});
-		//defineerimine sql päringu
-		let sqlReq = 'SELECT * FROM person';
-		const [sqlRes] = await conn.execute(sqlReq);
-		//console.log(sqlRes);
-		res.render('eestifilminimesed', {personList: sqlRes});
-	}
-	catch (err) {
-		console.log('Andmebaaside suhtlemise viga: ' + err);
-		res.render('eestifilminimesed', {personList: []});
-	}
-	finally {
-		if(conn){
-			await conn.end();
-		}
-	}
-});
+//Külastuste marsruudid
+const regvisitRouter = require('./routes/regvisitRoutes');
+app.use('/regvisit', regvisitRouter);
 
-app.get('/eestifilm/inimesed_lisa', (req, res)=>{
-	res.render('eestifilminimesed_lisa', {notice: 'Ootan sisestust!'});
-});
+//Galeriipiltide üleslaadimise marsruudid
+const galleryPhotoUploadRouter = require('./routes/galleryPhotoUploadRoutes');
+app.use('/galleryPhotoUpload', galleryPhotoUploadRouter);
 
-app.post('/eestifilm/inimesed_lisa', async (req, res)=>{
-	console.log(req.body);
-	//kontrollime andmeid
-	//sisestatud sünnikuupäev (tekst) teisendada kuupäevaks
-	const bornDate = new Date(req.body.bornInput);
-	const timeNow = new Date();
-	if(!req.body.firstNameInput || !req.body.lastNameInput || !req.body.bornInput || isNaN(bornDate.getTime() || bornDate > timeNow)){
-		console.log("Andmed pole korrektsed!");
-		return res.render('eestifilminimesed_lisa', {notice: 'Ootan sisestust!'});
-	}
-	let deceasedDate = null;
-	if(req.body.deceasedInput != ''){
-		deceasedDate = req.body.deceasedInput;
-	}
-	let conn;
-	try {
-		conn = await mysql.createConnection({
-			host: process.env.DB_HOST, 
-			user: process.env.DB_USER,
-			password: process.env.DB_PASS,
-			database: process.env.DB_NAME
-		});
-		let sqlReq = 'INSERT INTO person (first_name, last_name, born, deceased) VALUES (?,?,?,?)';
-		await conn.execute(sqlReq, [
-			req.body.firstNameInput,
-			req.body.lastNameInput,
-			req.body.bornInput,
-			deceasedDate
-		]);
-		res.render('eestifilminimesed_lisa', {notice: req.body.firstNameInput + ' ' + req.body.lastNameInput + ' andmebaasi lisatud!'});
-	}
-	catch (err) {
-		console.log('Viga andmebaasiga suhtlemisel: ' + err);
-		res.render('eestifilminimesed_lisa', {notice: 'Tekkis viga, midagi ei salvestanud!'});
-	}
-	finally {
-		if(conn){
-			await conn.end();
-		}
-	}
-});
+//Kasutajakonto loomine
+const signupRouter = require('./routes/signupRoutes');
+app.use('/signup', signupRouter);
 
+//Kasutajakontosse sisselogimine
+const signinRouter = require('./routes/signinRoutes');
+app.use('/signin', signinRouter);
 
 
 app.listen(5220);

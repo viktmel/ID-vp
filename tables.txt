@@ -1,0 +1,7 @@
+Galerii fotode tabel
+CREATE TABLE `if26_viktoria_melnik`.`gallery_photos` (`id` INT(4) NOT NULL AUTO_INCREMENT , `file_name` VARCHAR(100) NOT NULL , `orig_name` VARCHAR(100) NOT NULL , `alt_text` VARCHAR(256) NULL , `privacy` INT(1) NOT NULL , `user_id` INT(4) NOT NULL , `uploaded` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , `deleted` DATETIME NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+SELECT file_name, alt_text FROM gallery_photos WHERE id=(SELECT MAX(id) FROM gallery_photos WHERE privacy=3 AND deleted IS NULL);
+
+
+Kasutajakontod
+CREATE TABLE `if26_viktoria_melnik`.`users` (`id` INT(4) NOT NULL AUTO_INCREMENT , `firstname` VARCHAR(140) NOT NULL , `lastname` VARCHAR(100) NOT NULL , `birthdate` DATE NOT NULL , `gender` INT(1) NOT NULL , `email` VARCHAR(250) NOT NULL , `password` VARCHAR(120) NOT NULL , `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;

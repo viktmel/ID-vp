@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<meta charset="utf-8">
+	<title>Viktoria Melnik, veebiprogrammeerimine</title>
+</head>
+<body>
+<img src="/pic/veebiprogrammeerimine_2026_ID.png" alt="">
+	<h1>Fotogalerii</h1>
+	<% galleryList.forEach(function(picture){ %>
+	<li><img src='/gallery/normal/<%= picture.file_name %>' alt='<%= picture.alt_text %>'><br><%= picture.alt_text %></li>
+	<% }); %>
+	<ul>
+		<li><a href="/home">Tagasi avalehele</a></li>
+		<li><a href="/logout">Logi välja</a></li>
+	</ul>
+	<hr>
+</body>
+</html>

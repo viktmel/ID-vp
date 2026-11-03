@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<meta charset="utf-8">
+	<title>Viktoria Melnik, veebiprogrammeerimine</title>
+</head>
+<body>
+<img src="../pic/veebiprogrammeerimine_2026_ID.png" alt="">
+	<h1>Lisa žanrid!</h1>
+	<ul>
+		<li><a href="/">Tagasi avalehele</a></li>
+		<li><a href="/eestifilm">Tagasi Eesti filmide avalehele</a></li>
+	</ul>
+	<hr>
+	<form method="POST">
+		<label for="genreTitleInput">Žanri nimi</label>
+		<input id="genreTitleInput" name="genreTitleInput" type="text" placeholder="Nimi" required>
+		<br>
+		<label for="genreDescriptionInput">Millal tuli film välja?</label>
+		<input id="genreDescriptionInput" name="genreDescriptionInput" type="text" required>
+		<br>
+		<input id="genreSubmit" name="genreSubmit" type="submit" value="Salvesta">
+	</form>
+	<p><%= notice %></p>
+</body>
+</html>

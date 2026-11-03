@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<meta charset="utf-8">
+	<title>Viktoria Melnik, veebiprogrammeerimine</title>
+</head>
+<body>
+<img src="../pic/veebiprogrammeerimine_2026_ID.png" alt="">
+	<h1>Lisa Eesti filmiga seotud inimesed</h1>
+	<ul>
+		<li><a href="/">Tagasi avalehele</a></li>
+		<li><a href="/eestifilm">Tagasi Eesti filmide avalehele</a></li>
+	</ul>
+	<hr>
+	<form method="POST">
+		<select id="personChoice" name="personChoice">
+		<option selected disabled>Vali inimest</option>
+		<option value=""><%= %></option>
+		</select>
+		<br>
+		<label for="professionChoice">Filmiinimese amet</label>
+		<input id="professionChoice" name="professionChoice" type="select" required>
+		<br>
+		<label for="movieChoice">Filmi valik</label>
+		<input id="movieChoice" name="movieChoice" type="select" placeholder="Film" required>
+		<br>
+		<label for="actingRoleInput">Näitleja roll filmis</label>
+		<input id="actingRoleInput" name="actingRoleInput" type="text" placeholder="Roll">
+		<br>
+		<input id="personInMovieSubmit" name="personInMovieSubmit" type="submit" value="Salvesta">
+	</form>
+	<p><%= notice %></p>
+</body>
+</html>
