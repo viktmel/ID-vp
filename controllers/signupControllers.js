@@ -51,7 +51,7 @@ const signupPagePost = async (req, res) => {
 	}
 	
 	//kas sünnikuupäev on korrektne
-	if(!validator.isDate(birthDate) || !validator.isAfter(birthDate)){
+	if(!validator.isDate(birthDate) || validator.isAfter(birthDate)){
 		notice = 'Sünnikuupäev pole korrektne';
 		return res.render('signup', {notice: notice});
 	}

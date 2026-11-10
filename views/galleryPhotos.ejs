@@ -7,8 +7,9 @@
 <body>
 <img src="/pic/veebiprogrammeerimine_2026_ID.png" alt="">
 	<h1>Fotogalerii</h1>
+	<hr>
 	<% galleryList.forEach(function(picture){ %>
-	<li><img src='/gallery/normal/<%= picture.file_name %>' alt='<%= picture.alt_text %>'><br><%= picture.alt_text %></li>
+	<li><img src='/gallery/thumbs/<%= picture.file_name %>' alt='<%= picture.alt_text %>'><br><%= picture.alt_text %></li>
 	<% }); %>
 	<ul>
 		<li><a href="/home">Tagasi avalehele</a></li>

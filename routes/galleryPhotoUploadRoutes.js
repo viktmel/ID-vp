@@ -1,9 +1,12 @@
 const express = require('express');
 const multer = require('multer');
+const checkLogin = require('../src/checkLogin')
 
 const router = express.Router();
-
 //seadistame multer vahevara (middleware) failide üleslaadimiseks
+
+//kontrollime sisselogimist
+router.use(checkLogin.isLogin);
 //määran üleslaadimise kataloogi
 const upload = multer({dest: './public/gallery/orig/'});
 

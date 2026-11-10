@@ -26,7 +26,7 @@ const galleryPhotoUploadPost = async (req, res) => {
 		await sharp(req.file.destination + fileName).resize(800, 600).jpeg({quality: 90}).toFile('./public/gallery/normal/' + fileName);
 		await sharp(req.file.destination + fileName).resize(100, 100).jpeg({quality: 90}).toFile('./public/gallery/thumbs/' + fileName);
 		let sqlReq = 'INSERT INTO gallery_photos (file_name, orig_name, alt_text, privacy, user_id) VALUES (?, ?, ?, ?, ?)';
-		const user_id = 1; //see on ajutine, kuni teeme kasutajakontod ja sisselogimise
+		const user_id = req.session.userId;
 		conn = await mysql.createConnection({
 			host: process.env.DB_HOST, 
 			user: process.env.DB_USER,
